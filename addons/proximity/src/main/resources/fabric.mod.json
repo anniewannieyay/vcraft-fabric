@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "vcraft-proximity",
+  "version": "${version}",
+  "name": "VCraft Proximity Chat",
+  "description": "Addon for VCraft: hear nearby VCraft players on the same server without a call. Volume follows in-game distance. Voice stays end-to-end encrypted.",
+  "authors": ["VCraft"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "vcraft": ["dev.vcraft.addon.proximity.ProximityAddon"]
+  },
+  "depends": {
+    "fabricloader": ">=0.18.0",
+    "java": ">=21",
+    "vcraft": ">=${vcraft}"
+  }
+}

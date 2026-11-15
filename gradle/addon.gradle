@@ -1,0 +1,34 @@
+// Shared build for VCraft addons. They only use VCraft's addon API (no Minecraft classes),
+// so one jar works on every Minecraft version VCraft supports.
+apply plugin: 'java'
+
+version = project.addon_version
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://maven.fabricmc.net/' }
+}
+
+dependencies {
+    compileOnly project(':common')
+    compileOnly "net.fabricmc:fabric-loader:${loader_version}"
+    compileOnly 'com.google.code.gson:gson:2.11.0'
+    compileOnly 'org.slf4j:slf4j-api:2.0.16'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21
+    options.encoding = 'UTF-8'
+}
+
+processResources {
+    inputs.property 'version', project.addon_version
+    inputs.property 'vcraft', project.mod_version
+    filesMatching('fabric.mod.json') {
+        expand version: project.addon_version, vcraft: project.mod_version
+    }
+}
+
+jar {
+    archiveFileName = "${project.addon_id}-${project.addon_version}.jar"
+}

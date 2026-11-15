@@ -1,0 +1,26 @@
+# Copy to /etc/systemd/system/vcraft-relay.service, then:
+#   sudo useradd --system --home /opt/vcraft --shell /usr/sbin/nologin vcraft
+#   sudo mkdir -p /opt/vcraft && sudo cp vcraft-relay-*.jar /opt/vcraft/vcraft-relay.jar && sudo chown -R vcraft: /opt/vcraft
+#   sudo systemctl daemon-reload && sudo systemctl enable --now vcraft-relay
+#   journalctl -u vcraft-relay -f        (logs)
+[Unit]
+Description=VCraft relay
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=vcraft
+Group=vcraft
+WorkingDirectory=/opt/vcraft
+# Listens on localhost only; Caddy (or Cloudflare Tunnel) handles the public side and TLS.
+ExecStart=/usr/bin/java -Xmx512m -jar /opt/vcraft/vcraft-relay.jar --bind 127.0.0.1 --port 24470 --data /opt/vcraft/data --trust-proxy --no-console
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/opt/vcraft/data
+
+[Install]
+WantedBy=multi-user.target

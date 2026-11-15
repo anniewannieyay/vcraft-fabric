@@ -1,0 +1,19 @@
+pluginManagement {
+    repositories {
+        maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'vcraft'
+
+include 'common', 'relay', 'bot', 'mc1211', 'mc263'
+project(':mc1211').projectDir = file('versions/1.21.11')
+project(':mc263').projectDir = file('versions/26.3')
+
+// Optional addons, each its own mod jar.
+include 'addon-proximity', 'addon-announcements', 'addon-grouprules'
+project(':addon-proximity').projectDir = file('addons/proximity')
+project(':addon-announcements').projectDir = file('addons/announcements')
+project(':addon-grouprules').projectDir = file('addons/grouprules')

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "vcraft-announcements",
+  "version": "${version}",
+  "name": "VCraft Announcements",
+  "description": "Addon for VCraft: event announcements from the VCraft owner, with date, time, server invites and RSVPs. Public and signed.",
+  "authors": ["VCraft"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "vcraft": ["dev.vcraft.addon.announcements.AnnouncementsAddon"]
+  },
+  "depends": {
+    "fabricloader": ">=0.18.0",
+    "java": ">=21",
+    "vcraft": ">=${vcraft}"
+  }
+}

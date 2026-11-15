@@ -1,0 +1,42 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' version "${loom_version}" apply false
+    id 'net.fabricmc.fabric-loom-remap' version "${loom_version}" apply false
+}
+
+evaluationDependsOn(':mc1211')
+evaluationDependsOn(':mc263')
+evaluationDependsOn(':common')
+evaluationDependsOn(':addon-proximity')
+evaluationDependsOn(':addon-announcements')
+evaluationDependsOn(':addon-grouprules')
+
+// Single jar for all supported versions; VCraftEntry loads the matching package at runtime.
+def remapped = project(':mc1211').tasks.named('remapJar')
+def modern = project(':mc263').tasks.named('jar')
+def common = project(':common').tasks.named('jar')
+
+tasks.register('vcraftJar', Jar) {
+    group = 'build'
+    archiveFileName = "vcraft-${mod_version}.jar"
+    destinationDirectory = layout.buildDirectory.dir('libs')
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    dependsOn remapped, modern, common
+    from({ zipTree(remapped.get().archiveFile) }) { exclude 'META-INF/MANIFEST.MF' }
+    from({ zipTree(modern.get().archiveFile) }) { exclude 'META-INF/MANIFEST.MF' }
+    from({ zipTree(common.get().archiveFile) }) { exclude 'META-INF/MANIFEST.MF' }
+    manifest { attributes 'Implementation-Title': 'VCraft', 'Implementation-Version': mod_version }
+}
+
+def addonProjects = [':addon-proximity', ':addon-announcements', ':addon-grouprules']
+
+// Addon jars land next to the main jar, in build/libs/addons.
+tasks.register('addonJars', Copy) {
+    group = 'build'
+    addonProjects.each { p -> from(project(p).tasks.named('jar')) }
+    into layout.buildDirectory.dir('libs/addons')
+}
+
+tasks.register('build') {
+    group = 'build'
+    dependsOn 'vcraftJar', 'addonJars', ':relay:jar', ':bot:jar'
+}

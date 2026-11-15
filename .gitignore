@@ -1,0 +1,21 @@
+.gradle/
+build/
+*/build/
+versions/*/build/
+run/
+versions/*/run/
+vcraft-data/
+.idea/
+*.iml
+out/
+.DS_Store
+testbot/
+
+# Release builds
+releases/*/classes/
+releases/*/test/out/
+*.class
+
+# Private keys: never commit
+release-key.json
+horizon-mods.key

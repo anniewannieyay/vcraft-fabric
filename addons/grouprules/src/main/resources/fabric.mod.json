@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "vcraft-grouprules",
+  "version": "${version}",
+  "name": "VCraft Group Rules",
+  "description": "Addon for VCraft: group owners can set filtered words, slow mode, admins, admins-only posting and rules members must accept. Group chats stay end-to-end encrypted.",
+  "authors": ["VCraft"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "vcraft": ["dev.vcraft.addon.grouprules.GroupRulesAddon"]
+  },
+  "depends": {
+    "fabricloader": ">=0.18.0",
+    "java": ">=21",
+    "vcraft": ">=${vcraft}"
+  }
+}

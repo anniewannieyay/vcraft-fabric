@@ -1,0 +1,12 @@
+# /etc/caddy/Caddyfile — Caddy gets and renews the TLS certificate automatically.
+# Point your domain's DNS at the server first. Players then use: wss://relay.example.com
+relay.example.com {
+	# Signed mod updates (see deploy/publish-update.sh)
+	handle /vcraft/* {
+		root * /opt/vcraft/www
+		file_server
+	}
+	handle {
+		reverse_proxy 127.0.0.1:24470
+	}
+}

@@ -1,0 +1,68 @@
+// Sources in /mc are shared by every version. Blocks between //#if <tag> / //#else / //#endif are kept
+// or commented out per version, and the dev.vcraft.mc package gets a per-version suffix.
+
+def tag = project.mc_tag
+def pkg = project.mc_pkg
+def shared = rootProject.file('mc/src/main/java')
+def overrides = file('src/main/java')
+def generated = layout.buildDirectory.dir('generated/vcraft').get().asFile
+
+def preprocess = tasks.register('preprocessSources') {
+    inputs.dir(shared)
+    if (overrides.exists()) inputs.dir(overrides)
+    inputs.property('tag', tag)
+    outputs.dir(generated)
+    doLast {
+        generated.deleteDir()
+        [shared, overrides].findAll { it.exists() }.each { root ->
+            root.eachFileRecurse(groovy.io.FileType.FILES) { File f ->
+                if (!f.name.endsWith('.java')) return
+                def out = new File(generated, root.toPath().relativize(f.toPath()).toString())
+                out.parentFile.mkdirs()
+                def active = [true]
+                def lines = f.readLines('UTF-8').collect { String line ->
+                    def t = line.trim()
+                    if (t.startsWith('//#if ')) {
+                        def wanted = t.substring(6).split(/\s*\|\|\s*/).collect { it.trim() }
+                        active.add(active.last() && wanted.contains(tag))
+                        return line
+                    }
+                    if (t == '//#else') {
+                        def was = active.removeLast()
+                        active.add(active.last() && !was)
+                        return line
+                    }
+                    if (t == '//#endif') {
+                        active.removeLast()
+                        return line
+                    }
+                    def l = active.last() ? line : '//' + line
+                    return l.replaceAll(/\bdev\.vcraft\.mc\b/, "dev.vcraft.mc.${pkg}")
+                }
+                out.write(lines.join('\n') + '\n', 'UTF-8')
+            }
+        }
+    }
+}
+
+sourceSets.main.java.srcDirs = [generated]
+sourceSets.main.resources.srcDirs = [rootProject.file('mc/src/main/resources')]
+tasks.named('compileJava') { dependsOn preprocess }
+
+version = rootProject.mod_version
+group = rootProject.maven_group
+base { archivesName = "vcraft-${project.minecraft_version}" }
+
+dependencies {
+    implementation project(':common')
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') { expand 'version': project.version }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = project.java_version as int
+    options.encoding = 'UTF-8'
+}

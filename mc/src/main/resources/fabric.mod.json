@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "vcraft",
+  "version": "${version}",
+  "name": "VCraft",
+  "description": "Voice calls, group chats and direct messages with your friends from anywhere in Minecraft. End-to-end encrypted.",
+  "authors": ["VCraft"],
+  "license": "MIT",
+  "icon": "assets/vcraft/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["dev.vcraft.core.VCraftEntry"]
+  },
+  "depends": {
+    "fabricloader": ">=0.18.0",
+    "minecraft": ["~1.21.11", "~26.3"],
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "nowplaying": "*"
+  }
+}
